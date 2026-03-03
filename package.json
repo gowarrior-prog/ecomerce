@@ -1,6 +1,6 @@
 {
   "name": "ecomerce",
-  "homepage": "https://gowarrior-prog.github.io/ecomerce",
+  "homepage": "https://gowarrior-prog.github.io/ecomerce/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
