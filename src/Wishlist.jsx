@@ -1,34 +1,32 @@
 // src/pages/Wishlist.jsx
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingCart, X } from 'lucide-react';
-import { useCart } from './CartContext'; // adjust path if needed
+import { useCart } from './CartContext'; // adjust path
 import { useState, useEffect } from 'react';
+import { products } from './dataproducts'; // ← Import real products
 
 export default function Wishlist() {
   const { addToCart } = useCart();
 
-  // Liked products ko localStorage se load karo
   const [likedProducts, setLikedProducts] = useState(() => {
-    const saved = localStorage.getItem('likedProducts');
+    const saved = localStorage.getItem('luxe-mart-liked');
     return saved ? JSON.parse(saved) : {};
   });
 
-  // Liked products ki list (sirf liked wale)
+  // Get only liked products with REAL data
   const likedItems = Object.keys(likedProducts)
     .filter(id => likedProducts[id])
     .map(id => {
-      // Yeh dummy data hai – real app mein tum products array ya API se fetch kar sakte ho
-      // Abhi ke liye simple mapping (tum apne products array se match kar sakte ho)
-      const product = {
+      // Find real product by id
+      const realProduct = products.find(p => p.id === parseInt(id));
+      return realProduct || {
         id: parseInt(id),
-        name: `Product ${id}`, // ← yeh real name se replace karna
+        name: `Product ${id} (not found)`,
         price: 25000,
-        image: "https://via.placeholder.com/300?text=Liked+Product+" + id,
+        image: "https://via.placeholder.com/300?text=Product+Not+Found",
       };
-      return product;
     });
 
-  // Remove from wishlist
   const removeFromWishlist = (id) => {
     setLikedProducts(prev => {
       const updated = { ...prev, [id]: false };
@@ -81,7 +79,12 @@ export default function Wishlist() {
                   <img
                     src={item.image}
                     alt={item.name}
+                    referrerPolicy="no-referrer"
+                    crossOrigin="anonymous"
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/300?text=Image+Failed";
+                    }}
                   />
                   <button
                     onClick={() => removeFromWishlist(item.id)}

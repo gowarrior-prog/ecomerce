@@ -2,12 +2,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';          // ← Yeh line add kar di — error khatam
+import { Link } from 'react-router-dom';
 import { Search, Heart, ShoppingCart, Menu, X } from 'lucide-react';
+import { useCart } from './CartContext';  // ← Make sure this path is correct (adjust if needed)
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  // Get both likedCount and cartCount from context
+  const { likedCount, cartCount } = useCart();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -20,7 +24,7 @@ export default function Navbar() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 md:h-20 items-center justify-between">
 
-            {/* Logo - use Link instead of <a> */}
+            {/* Logo */}
             <div className="flex-shrink-0">
               <Link to="/" className="text-2xl md:text-3xl font-black tracking-tight text-white">
                 LUXE<span className="text-rose-500">Mart</span>
@@ -65,7 +69,6 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* About link - now working */}
               <Link
                 to="/about"
                 className="text-white/90 hover:text-white font-medium transition-colors duration-200 relative group inline-block"
@@ -95,18 +98,22 @@ export default function Navbar() {
                 />
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/70 pointer-events-none" />
               </div>
+
+              {/* Heart with live liked count */}
               <Link to="/wishlist" className="relative text-white/80 hover:text-white transition">
                 <Heart className="h-6 w-6" />
-                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                  {/* Yeh count liked products ka ho sakta hai – abhi static 4 hai */}
-                  4
-                </span>
+                {likedCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                    {likedCount}
+                  </span>
+                )}
               </Link>
 
+              {/* Cart with count */}
               <Link to="/cart" className="relative text-white/80 hover:text-white transition">
                 <ShoppingCart className="h-6 w-6" />
                 <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                  12
+                  {cartCount || 0}
                 </span>
               </Link>
 
@@ -115,6 +122,7 @@ export default function Navbar() {
               </Link>
             </div>
 
+            {/* Mobile menu toggle */}
             <button
               className="lg:hidden text-white p-2 rounded-lg hover:bg-white/10 transition"
               onClick={() => setIsOpen(!isOpen)}
@@ -124,7 +132,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu - change <a> to <Link> here too */}
+        {/* Mobile Menu */}
         {isOpen && (
           <div className="lg:hidden bg-black/60 backdrop-blur-xl border-t border-white/10">
             <div className="px-4 py-6 space-y-4">
@@ -146,15 +154,21 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex justify-around">
-                  <Link to="/wishlist" className="flex flex-col items-center text-white/80">
+                  <Link to="/wishlist" className="flex flex-col items-center text-white/80 relative">
                     <Heart className="h-6 w-6 mb-1" />
+                    {likedCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                        {likedCount}
+                      </span>
+                    )}
                     <span className="text-xs">Wishlist</span>
                   </Link>
+
                   <Link to="/cart" className="flex flex-col items-center text-white/80 relative">
                     <ShoppingCart className="h-6 w-6 mb-1" />
                     <span className="text-xs">Cart</span>
                     <span className="absolute -top-1 right-3 bg-rose-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                      12
+                      {cartCount || 0}
                     </span>
                   </Link>
                 </div>
